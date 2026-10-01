@@ -1,0 +1,38 @@
+[
+  {
+    "case": "Known support FAQ",
+    "happened": "Customer asks a documented question",
+    "next": "Send verified answer",
+    "decider": "system"
+  },
+  {
+    "case": "Refund exception",
+    "happened": "Refund request falls outside standard policy",
+    "next": "Review context",
+    "decider": "person"
+  },
+  {
+    "case": "Qualified lead",
+    "happened": "Account matches explicit target criteria",
+    "next": "Draft outreach",
+    "decider": "system"
+  },
+  {
+    "case": "External send",
+    "happened": "AI draft is ready to send to a customer",
+    "next": "Approve send",
+    "decider": "person"
+  },
+  {
+    "case": "Duplicate identity",
+    "happened": "Two records may describe the same person",
+    "next": "Resolve identity",
+    "decider": "person"
+  },
+  {
+    "case": "Routine queue item",
+    "happened": "Known event matches a deterministic rule",
+    "next": "Create task",
+    "decider": "system"
+  }
+]

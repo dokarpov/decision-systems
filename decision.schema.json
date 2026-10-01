@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Minimal Decision",
+  "type": "object",
+  "required": [
+    "happened",
+    "next",
+    "decider"
+  ],
+  "properties": {
+    "happened": {
+      "type": "string",
+      "description": "What happened?"
+    },
+    "next": {
+      "type": "string",
+      "description": "What should happen next?"
+    },
+    "decider": {
+      "type": "string",
+      "enum": [
+        "system",
+        "person"
+      ],
+      "description": "Who decides?"
+    }
+  }
+}
