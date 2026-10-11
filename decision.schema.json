@@ -1,28 +1,39 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Minimal Decision",
+  "title": "Decision Systems Contract",
   "type": "object",
-  "required": [
-    "happened",
-    "next",
-    "decider"
-  ],
+  "additionalProperties": false,
+  "required": ["happened", "next", "decider"],
   "properties": {
     "happened": {
       "type": "string",
+      "minLength": 1,
       "description": "What happened?"
     },
     "next": {
       "type": "string",
+      "minLength": 1,
       "description": "What should happen next?"
     },
     "decider": {
       "type": "string",
-      "enum": [
-        "system",
-        "person"
-      ],
+      "enum": ["system", "person"],
       "description": "Who decides?"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Machine-readable routing reason"
+    },
+    "traits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "clear": { "type": "boolean" },
+        "consequential": { "type": "boolean" },
+        "reversible": {
+          "oneOf": [{ "type": "boolean" }, { "type": "null" }]
+        }
+      }
     }
   }
 }
