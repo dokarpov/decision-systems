@@ -2,7 +2,27 @@ name: test
 on:
   push:
     branches: [main]
+    paths:
+      - 'decision.js'
+      - 'decision.schema.json'
+      - 'evals/**'
+      - 'examples/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'index.html'
+      - 'package*.json'
+      - '.github/workflows/test.yml'
   pull_request:
+    paths:
+      - 'decision.js'
+      - 'decision.schema.json'
+      - 'evals/**'
+      - 'examples/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'index.html'
+      - 'package*.json'
+      - '.github/workflows/test.yml'
   workflow_dispatch:
 
 concurrency:
