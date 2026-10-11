@@ -1,38 +1,50 @@
 [
   {
-    "case": "Known support FAQ",
-    "happened": "Customer asks a documented question",
-    "next": "Send verified answer",
-    "decider": "system"
+    "domain": "support",
+    "happened": "Customer asked a known FAQ",
+    "next": "Send the standard answer",
+    "clear": true,
+    "consequential": false,
+    "reversible": true
   },
   {
-    "case": "Refund exception",
-    "happened": "Refund request falls outside standard policy",
-    "next": "Review context",
-    "decider": "person"
+    "domain": "sales-intake",
+    "happened": "Two records may describe the same buyer",
+    "next": "Resolve identity before CRM write",
+    "clear": false,
+    "consequential": true,
+    "reversible": false
   },
   {
-    "case": "Qualified lead",
-    "happened": "Account matches explicit target criteria",
-    "next": "Draft outreach",
-    "decider": "system"
+    "domain": "agentic-gtm",
+    "happened": "Agent drafted an outbound email to a named account",
+    "next": "Send externally",
+    "clear": true,
+    "consequential": true,
+    "reversible": false
   },
   {
-    "case": "External send",
-    "happened": "AI draft is ready to send to a customer",
-    "next": "Approve send",
-    "decider": "person"
+    "domain": "finance",
+    "happened": "Invoice matched and payment prepared",
+    "next": "Execute payment",
+    "clear": true,
+    "consequential": true,
+    "reversible": false
   },
   {
-    "case": "Duplicate identity",
-    "happened": "Two records may describe the same person",
-    "next": "Resolve identity",
-    "decider": "person"
+    "domain": "ops",
+    "happened": "Stale non-production resource identified",
+    "next": "Delete the resource",
+    "clear": true,
+    "consequential": false,
+    "reversible": false
   },
   {
-    "case": "Routine queue item",
-    "happened": "Known event matches a deterministic rule",
-    "next": "Create task",
-    "decider": "system"
+    "domain": "crm",
+    "happened": "Lead validated with consent gate passed",
+    "next": "Create CRM contact (idempotent)",
+    "clear": true,
+    "consequential": false,
+    "reversible": true
   }
 ]
