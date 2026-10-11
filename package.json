@@ -1,11 +1,13 @@
 {
   "name": "decision-systems",
-  "version": "0.4.0",
-  "description": "Decision layer for product and agentic workflows: happened → next → who decides. Optional reversibility bridges to tool approval policy.",
+  "version": "0.5.0",
+  "description": "Small explicit decision boundary for product and agentic workflows: happened → next → who decides.",
   "author": "Daria Karpova <dokarpov>",
   "license": "MIT",
   "keywords": ["decision-systems", "agentic", "human-in-the-loop", "policy", "product", "ai-agents"],
   "main": "decision.js",
-  "scripts": { "test": "node scripts/run-evals.mjs" },
+  "scripts": {
+    "test": "node --test tests/core.test.js && node scripts/run-evals.mjs"
+  },
   "files": ["decision.js", "decision.schema.json", "docs/", "evals/", "examples/", "index.html", "LICENSE", "README.md", "CHANGELOG.md"]
 }
