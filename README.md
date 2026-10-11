@@ -1,12 +1,12 @@
-# Decision Systems v0.4
+# Decision Systems v0.5
 
 [![test](https://github.com/dokarpov/decision-systems/actions/workflows/test.yml/badge.svg)](https://github.com/dokarpov/decision-systems/actions/workflows/test.yml)
 
-**A small executable decision boundary for product, operations and agentic workflows.**
+**An explicit decision boundary for product, operations and agentic workflows.**
 
 > What happened → what next → who decides?
 
-The point is not to make every decision automatic. It is to make the boundary explicit enough that a system can **act on clear, low-consequence work and route ambiguity or irreversible decisions to a person**.
+Decision Systems is deliberately small. It separates workflow routing from action permission so automation can handle clear, low-consequence work while ambiguity, meaningful consequence or explicit irreversibility is routed to a person.
 
 ## Why this exists
 
@@ -16,12 +16,12 @@ Many “AI workflow” designs collapse three different questions into one promp
 2. what should happen next?
 3. who has the right to decide?
 
-That makes handoff, audit and downstream policy harder to reason about. Decision Systems keeps the decision contract small and inspectable.
+That makes handoff, testing and downstream policy harder to inspect. This repository turns the third question into a deterministic contract.
 
 ```text
 event / state
     ↓
-next action candidate
+candidate next step
     ↓
 clarity + consequence + reversibility
     ↓
@@ -50,45 +50,53 @@ const evidence = record({
 });
 ```
 
-- `decide()` — routes the next decision to `system` or `person`.
-- `record()` — packages `happened / next / decider / reason / traits` for queues or audit.
-- `toActionTraits()` — bridges the decision into tool/action policy without hiding risk traits in prose.
+- `decide()` routes the decision to `system` or `person`.
+- `record()` packages the event, candidate next step, decision, reason and traits.
+- `toActionTraits()` carries those traits into a downstream action-policy layer.
 
-## Evidence today
+## What is actually verified
 
 | Evidence | Status |
 |---|---|
 | Executable routing contract | implemented |
-| JSON schema | implemented |
+| Input validation / fail-fast behavior | tested |
+| Record + action-trait bridge | tested |
+| JSON contract | included |
 | Cross-domain examples | included |
-| Agentic decision cases | included |
-| Automated evals | **12/12 passing** |
-| Production customer outcome | **not claimed** |
+| Scenario evals | **12 cases passing** |
+| Browser behavior | CI smoke-tested at 4 viewport sizes |
+| Production deployment / customer outcome | **not claimed** |
 
-Run:
+Run the contract tests and scenario evals with:
 
 ```bash
 npm test
 ```
 
+The GitHub workflow also checks the browser demo separately.
+
 ## Interactive demo
 
-`index.html` exposes the routing rule directly: clarity, consequence and reversibility change the decider in real time.
+`index.html` exposes the same routing rule used by the library. It is a demonstration of the contract, not a claim of production workflow coverage.
 
 ## Relationship to Policy Kit
 
 Decision Systems answers **who decides**.
 
-[Policy Kit](https://github.com/dokarpov/policy-kit) answers the second question required by tool-using agents: **even if the system may decide, may this action execute automatically?**
+[Policy Kit](https://github.com/dokarpov/policy-kit) answers the separate execution question: **may this action run automatically?**
 
 ```text
 Decision Systems                 Policy Kit
 who decides?        ───────►     AUTO / ASK / BLOCK
 ```
 
-## Status boundary
+A system-owned decision can therefore still be asked or blocked by downstream action policy.
 
-This repository demonstrates a reusable product/agent decision pattern plus executable tests. It does **not** claim production deployment, customer adoption, compliance certification or statistically optimal decision thresholds.
+## Limits
+
+This repository demonstrates a reusable decision pattern with deterministic tests and explicit handoff behavior. It does **not** claim production deployment, customer adoption, compliance certification, domain completeness or statistically optimal thresholds.
+
+The rule is intentionally conservative. Real deployments still need domain-specific permissions, evidence, observability, recovery and review design around it.
 
 ---
 
