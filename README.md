@@ -1,78 +1,73 @@
-# Decision Systems
+# Decision Systems v0.4
 
 **A tiny decision layer for any workflow.**
 
 > **What happened → What next → Who decides**
 
-Most teams do not need another dashboard.  
-They need a simple way to turn signals into the next clear action.
+**Automate certainty. Route ambiguity.**
 
-Decision Systems is a lightweight pattern for product, operations and AI workflows.
+## Product upgrades in v0.4 (systemic)
 
-## The whole model
+| Change | Why |
+|--------|-----|
+| Optional `reversible` on `decide()` | Aligns workflow decisions with tool policy (Agentic Approval). Irreversible ⇒ person. |
+| `record()` | Packages full `{ happened, next, decider, reason, traits }` for queues / audit. |
+| `toActionTraits()` | Bridge into Agentic Approval Lab without ad-hoc mapping. |
+| Agentic eval cases | money, privilege, irreversible delete, CRM write — not only FAQ demos. |
+| Traits on every result | Downstream systems can re-evaluate without re-asking the model. |
 
-Every event only needs three answers:
+Backward compatible: omitting `reversible` keeps v0.2/v0.3 behavior.
 
-1. **What happened?**
-2. **What should happen next?**
-3. **Who decides — the system or a person?**
+## Core rule
 
-That is the core.
+- **System acts** when the next step is clear and a wrong action is low-consequence (and reversible when the flag is supplied).
+- **Person decides** when the situation is ambiguous, consequential, or hard to reverse.
 
-Everything else — evidence, confidence, deadlines, permissions, recovery — is optional metadata added only when the workflow needs it.
+## API
 
-## Universal rule
+```js
+const { decide, record, toActionTraits } = require('./decision.js');
 
-**System acts** when the next step is clear and low-risk.
+decide({ clear: true, consequential: false, reversible: true });
+// → { decider: 'system', reason: 'clear_low_consequence', traits: {...} }
 
-**Person decides** when the situation is ambiguous, consequential or irreversible.
+record({
+  happened: 'Lead validated with consent',
+  next: 'Create CRM contact',
+  clear: true,
+  consequential: false,
+  reversible: true
+});
 
-No scoring model is required.
+// Bridge to tool policy:
+const action = toActionTraits(decide(...), { id: 'crm_create', allowed: true });
+// → feed into AgenticApproval.routeAction(action)
+```
 
-## Examples
+## Pairing with Agentic Approval Lab
 
-| Situation | What happened | What next | Who decides |
-|---|---|---|---|
-| Support | Customer asks a known FAQ | Send known answer | System |
-| Billing | Refund exception | Review account context | Person |
-| Sales | Company matches target profile | Draft outreach | System |
-| CRM | Two records may be the same person | Resolve identity | Person |
-| AI agent | Draft is ready | Save draft | System |
-| AI agent | Message is ready to send externally | Approve send | Person |
+```text
+decide / record  →  if system  →  toActionTraits  →  routeAction (AUTO|ASK|BLOCK)  →  execute
+```
 
-## Try it
+## Executable surface
 
-Open `index.html`.
+| File | Purpose |
+|------|---------|
+| `decision.js` | decide / record / toActionTraits |
+| `decision.schema.json` | Contract including optional reason + traits |
+| `evals/decision-cases.json` | 12 routing cases (incl. agentic) |
+| `examples/universal-cases.json` | Cross-domain illustrations |
+| `index.html` | Interactive demo with reversible control |
 
-Describe an event, choose whether the next step is clear and whether the action has meaningful consequences.
+```bash
+npm test
+```
 
-The demo returns only one of two decisions:
+## Status boundary
 
-- **DO IT**
-- **ASK A PERSON**
+Reference pattern + executable policy. Not production metrics or compliance certification.
 
-## Why this is useful
+---
 
-The pattern is deliberately small enough to use in:
-
-- product workflows
-- support
-- sales
-- internal tools
-- onboarding
-- finance operations
-- AI agents
-- approvals
-- back-office work
-- automation
-
-The point is not to model the whole organisation.
-
-The point is to make the **next decision explicit**.
-
-## Design principle
-
-> **Automate certainty. Route ambiguity.**
-
-Built by **Daria Karpova**  
-Product Systems & AI · 0→1 · Fractional Product Lead
+Built by **Daria Karpova** · Product Systems & AI · 0→1 · [dokarpov](https://github.com/dokarpov)
