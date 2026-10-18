@@ -4,6 +4,8 @@ This contract evaluates **routing behavior**, not AI quality or authorization. P
 
 ## Executable gates
 
+- Fail-closed policy bridge and contradictory-result rejection are checked in unit tests.
+- CommonJS import must not attach a global browser variable in Node.js.
 - Core unit tests with an exhaustive `2 × 2 × 3` (clear × consequence × reversible/irreversible/unknown) matrix: automatic routing requires **three explicit safe conditions**.
 - 16 synthetic/illustrative evals: verify the decider and, where specified, the machine-readable reason.
 - Clean consumer test: `npm pack`, install `.tgz` into a temporary unrelated directory, `require('decision-systems')`, run the public API, then remove everything.
