@@ -14,7 +14,7 @@ for (const c of cases) {
   const input = { clear: c.clear, consequential: c.consequential };
   if (c.reversible !== undefined) input.reversible = c.reversible;
   const result = decide(input);
-  const ok = result.decider === c.expected;
+  const ok = result.decider === c.expected && (!c.reason || result.reason === c.reason);
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${c.id}: expected=${c.expected} actual=${result.decider}${result.reason ? ` (${result.reason})` : ''}`);
   if (ok) passed += 1;
   else process.exitCode = 1;
