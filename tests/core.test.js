@@ -74,7 +74,7 @@ test('action-policy bridge preserves decision traits and defaults safely', () =>
       id: 'workflow_step',
       label: undefined,
       kind: 'workflow',
-      allowed: true,
+      allowed: false,
       clear: false,
       consequential: true,
       reversible: false
@@ -112,4 +112,29 @@ test('a missing reversibility signal never silently becomes permission to act',(
  const traits=toActionTraits(output);
  assert.equal(traits.reversible,false);
  // This is descriptive input to a policy engine, NOT an execution-authorization grant.
+});
+
+test('policy bridge requires explicit permission even when routing to system', () => {
+ const route=decide({clear:true,consequential:false,reversible:true});
+ assert.equal(toActionTraits(route).allowed,false);
+ assert.equal(toActionTraits(route,{allowed:true}).allowed,true);
+ assert.equal(toActionTraits(route,{allowed:'yes'}).allowed,false);
+});
+
+test('human review cannot be converted into allowed=true by an integration option',()=>{
+ const human=decide({clear:false,consequential:true,reversible:false});
+ assert.equal(toActionTraits(human,{allowed:true}).allowed,false);
+ const unknown=decide({clear:true,consequential:false});
+ assert.equal(toActionTraits(unknown,{allowed:true}).allowed,false);
+});
+
+test('forged or inconsistent decision results fail closed',()=>{
+ assert.throws(()=>toActionTraits({decider:'system',traits:{clear:false,consequential:false,reversible:true}},{allowed:true}),TypeError);
+ assert.throws(()=>toActionTraits({decider:'system',traits:{clear:true,consequential:false,reversible:null}},{allowed:true}),TypeError);
+ assert.throws(()=>toActionTraits({decider:'system',traits:{clear:'true',consequential:false,reversible:true}},{allowed:true}),TypeError);
+ assert.throws(()=>toActionTraits({traits:{clear:true,consequential:false,reversible:true}},{allowed:true}),TypeError);
+});
+
+test('CommonJS import does not pollute global scope with browser API',()=>{
+ assert.equal(Object.prototype.hasOwnProperty.call(globalThis,'DecisionSystems'),false);
 });
