@@ -1,7 +1,7 @@
 {
   "name": "decision-systems",
-  "version": "0.6.0",
-  "description": "Small deterministic decision-routing contract, with conservative human handoff and an independent consumer test.",
+  "version": "0.7.0",
+  "description": "Deterministic human vs system decision routing; fail-closed policy bridge and reproducible external consumer tests.",
   "author": "Daria Karpova <dokarpov>",
   "license": "MIT",
   "keywords": [

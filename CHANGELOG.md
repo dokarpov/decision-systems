@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.7.0 — 2026-10-18 (independent-use hardening)
+
+- **Behavior change:** `toActionTraits()` defaults to `allowed:false` (was `true`), and even explicit permission cannot mark human-owned decisions as allowed.
+- Rejects inconsistent routing decisions and invalid traits before producing downstream action-policy input.
+- CommonJS import no longer pollutes global scope; browser script support remains.
+- Provides direct GitHub installation for testers, without claiming an npm registry release.
+
 ## v0.6.0 — 2026-10-18 (release candidate)
 
 ### Safety

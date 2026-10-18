@@ -26,6 +26,19 @@ const result = decide({
 2. **Before an executor or tool call** — so ambiguous, consequential or explicitly hard-to-reverse work is not silently automated.
 3. **Before the human queue** — so a reviewer receives a reasoned handoff rather than an opaque exception.
 
+## Explicit permission gate (v0.7)
+
+`toActionTraits(decisionResult)` defaults to `allowed:false`. Only a caller-supplied `allowed:true` combined with a consistent `decider:system` can produce `allowed:true` in the bridged traits. A human route cannot become allowed by passing an option. The bridge rejects inconsistent/forged results.
+
+```js
+const {decide,toActionTraits}=require('decision-systems');
+const route=decide({clear:true,consequential:false,reversible:true});
+const gated=toActionTraits(route,{id:'save_internal_draft',allowed:true});
+// gated.allowed === true -- still only input to an execution-policy engine
+```
+
+This is **not authorization** and does not check an actual user's privileges. The integrating app must independently validate the inputs, authenticated actor, resource, permission, downstream side effects and recovery policy.
+
 ## Pairing with Policy Kit
 
 Decision Systems answers **who decides**.  

@@ -21,24 +21,19 @@ Observe: time to correctly identify the route; number of false interpretations o
 Prerequisite: Node 20+ and npm. Install or publish nothing globally.
 
 ```bash
-git clone https://github.com/dokarpov/decision-systems.git
-cd decision-systems
-npm test
-npm pack
-mkdir -p /tmp/decision-systems-consumer
-cd /tmp/decision-systems-consumer
+mkdir -p decision-test && cd decision-test
 npm init -y
-npm install /path/to/decision-systems/decision-systems-0.6.0.tgz
+npm install github:dokarpov/decision-systems
 node -e "const {decide}=require('decision-systems'); console.log(decide({clear:true,consequential:false,reversible:true}))"
 ```
 
-The automated `consumer.test.js` uses the same local npm tarball installation inside a clean temporary directory. A green CI run proves *technical installability in its test environment*, **not** adoption or ease of use by an independent person.
+The automated `consumer.test.js` verifies a local npm tarball installation inside a clean temporary directory. GitHub-source installation in an unrelated user environment is still a separate external test. A green CI run proves *technical installability in its test environment*, **not** adoption or ease of use by an independent person.
 
 Try three cases: an internal draft (system route), an ambiguous customer identity (person), and a case whose reversal path is unverified (person). Pair the route with your own executor permission policy before doing anything irreversible.
 
 ### Sample and decision thresholds
 
-Recruit **5 developers/automation owners** unfamiliar with the repo and **3 operations/product owners** who can interpret routing consequences. Separate usability findings from integration failures. The numbers are *pilot targets*, not a statistically representative sample.
+Recruit **5 developers/automation owners** unfamiliar with the repo and **3 operations/product owners** who can interpret routing consequences. Separate usability findings from integration failures. The numbers are *pilot targets*, not a statistically representative sample. Record the repository commit SHA used in each external trial. Confirm the public demo URL works before directing browser-only testers there.
 
 - **Safety gate:** 0 externally observed cases where an irreversible, high-consequence, ambiguous or unverified action is presented as eligible for automatic routing.
 - **Comprehension hypothesis:** at least 6/8 participants can explain the outcome and reason without facilitator hints within 2 minutes. The criterion is provisional; record every failure case.
