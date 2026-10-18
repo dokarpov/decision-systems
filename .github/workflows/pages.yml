@@ -25,6 +25,26 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run decision engine tests and evaluations
+        run: npm test
+      - name: Scan public artifact for accidental secrets and internal notes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          for name in ("index.html", "decision.js"):
+              data = Path(name).read_text()
+              patterns = {
+                  "credential": r"(?:ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk_(?:live|test)_[A-Za-z0-9]{12,}|AKIA[0-9A-Z]{16}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)",
+                  "internal note": r"(?im)^\s*(?:<!--|//|/\*)?\s*(?:INTERNAL ONLY|DEVELOPER NOTE|FIXME|TODO)\s*[:\-]",
+              }
+              for label, pattern in patterns.items():
+                  if re.search(pattern, data):
+                      raise SystemExit(f"{name}: forbidden {label} in public artifact")
+          PY
       - uses: actions/configure-pages@v5
       - name: Prepare minimal public artifact
         run: |
