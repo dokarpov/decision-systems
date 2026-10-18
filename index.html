@@ -2,22 +2,166 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Decision Systems v0.5</title>
+<meta name="description" content="Try a conservative decision routing rule with your own scenarios. Explicit next action, reversibility and human handoff. Synthetic data only.">
+<title>Decision Systems — try a decision boundary</title>
 <style>
-:root{--bg:#f7f6f8;--card:#fff;--ink:#15131a;--muted:#6d6875;--line:#ded9e3;--accent:#725aa3}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:940px;margin:auto;padding:56px 20px 80px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}h1{font-size:clamp(42px,8vw,76px);line-height:.96;letter-spacing:-.055em;margin:12px 0 18px}.lede{font-size:20px;max-width:680px;color:var(--muted)}.flow{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0 48px;align-items:center}.node{background:var(--ink);color:#fff;border-radius:999px;padding:9px 13px;font-size:14px}.arrow{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 12px 40px rgba(30,20,50,.05)}label{display:block;font-weight:650;margin:15px 0 7px}textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:14px;padding:13px;font:inherit;resize:vertical;background:white}.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:12px}@media(max-width:700px){.row{grid-template-columns:1fr}}.choice{border:1px solid var(--line);border-radius:16px;padding:15px}.choice strong{display:block;margin-bottom:8px}.choice label{font-weight:400;margin:7px 0;min-height:44px;display:flex;align-items:center;gap:6px}.result{margin-top:20px;padding:22px;border-radius:18px;background:#15131a;color:#fff}.result .big{font-size:34px;font-weight:800;letter-spacing:-.03em}.result p{color:#d8d2df;margin-bottom:0}.small{margin-top:26px;color:var(--muted);font-size:13px}
+:root{--paper:#fff;--ink:#17241c;--muted:#42544a;--border:#c7d1c9;--soft:#f1f5f0;--active:#e4eee5;--danger:#79391e}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:3px solid #935a2f;outline-offset:3px}
+.wrap{max-width:1040px;margin:auto;padding:0 22px}
+header{border-bottom:1px solid var(--border)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:12px}
+.brand{font-size:21px;font-weight:800;letter-spacing:-.055em;text-decoration:none}
+header a:last-child{font-size:13px;font-weight:650}
+main{padding-top:42px;padding-bottom:80px}
+.eyebrow,.meta,.tag,.explanation,dt{font-size:12px;font-weight:700;letter-spacing:.045em}
+.eyebrow{color:var(--muted)}
+h1{font-size:clamp(39px,6vw,68px);line-height:1.04;letter-spacing:-.064em;max-width:830px;margin:12px 0 20px}
+.intro{font-size:17px;color:var(--muted);max-width:700px;margin:0 0 28px}
+.interface{border:1px solid var(--border);background:var(--paper)}
+.interfaceHeader{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 22px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700}
+.tag{color:var(--muted)}
+.demoInner{padding:20px 22px 24px}
+.caseSelect{display:block;font-weight:700;font-size:14px;margin:0 0 8px}
+select{width:100%;padding:13px 12px;min-height:52px;border:1px solid #82958a;border-radius:4px;background:#fff;color:var(--ink);font-weight:600}
+.caseContext{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0 16px}
+.caseContext article{border-top:1px solid var(--border);padding-top:12px}
+.caseContext strong{font-size:12px;text-transform:uppercase;color:var(--muted)}
+.caseContext p{margin:4px 0 0;font-size:14px}
+.result{position:sticky;top:0;z-index:2;padding:17px 18px;margin:18px 0;background:var(--ink);color:#fff;border-radius:4px;box-shadow:0 6px 22px #142b1a1b}
+.result .meta{color:#dce8dd}
+.result strong{display:block;font-size:clamp(21px,3vw,29px);letter-spacing:-.035em;line-height:1.14;margin:6px 0}
+.result p{font-size:14px;line-height:1.45;margin:0;color:#f1f6f1}
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+fieldset{border:1px solid var(--border);margin:0;padding:12px;min-width:0}
+legend{font-size:13px;font-weight:750;padding:0 4px}
+.radio{display:flex;align-items:center;min-height:44px;gap:8px;font-size:14px;line-height:1.3;padding:4px}
+input[type=radio]{width:18px;height:18px;flex:0 0 18px;accent-color:#244d31}
+details{margin:18px 0;border-top:1px solid var(--border);padding-top:12px}
+details summary{font-size:14px;font-weight:700;cursor:pointer;min-height:44px;display:flex;align-items:center}
+pre{padding:14px;background:#f4f6f3;border:1px solid var(--border);overflow:auto;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.secondary{background:#fff;color:var(--ink);border:1px solid #7e9285;padding:11px 15px;min-height:46px;font-weight:700}
+.secondary:hover{background:var(--soft)}
+#copyStatus{font-size:12px;color:var(--muted)}
+.disclaimer{font-size:13px;line-height:1.55;color:var(--muted);margin:14px 0 0}
+.nextSteps{margin:42px 0 0;padding-top:25px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.nextSteps h2{font-size:22px;letter-spacing:-.035em;line-height:1.2;margin:0 0 10px}
+.nextSteps p{font-size:14px;color:var(--muted)}
+.nextSteps a{font-weight:700;text-underline-offset:4px}
+footer{border-top:1px solid var(--border);padding:18px 0;color:var(--muted);font-size:12px}
+@media(max-width:720px){
+ .caseContext{grid-template-columns:1fr;gap:6px;margin:10px 0}
+ .caseContext article{padding-top:8px}
+ .choices{grid-template-columns:1fr;gap:10px}
+ fieldset{display:flex;flex-wrap:wrap;gap:4px 15px;padding:8px 10px}
+ legend{font-size:13px}
+ .radio{min-height:44px}
+ .nextSteps{grid-template-columns:1fr;gap:22px}
+}
+@media(max-width:420px){
+ .wrap{padding:0 16px}
+ main{padding-top:24px}
+ h1{font-size:38px;line-height:1.07;margin:10px 0}
+ .intro{font-size:15px;margin-bottom:20px}
+ .demoInner{padding:15px 13px 17px}
+ .interfaceHeader{padding:12px 13px;font-size:12px}
+ .result{margin:12px 0;padding:12px 13px}
+ .result strong{font-size:22px;margin:4px 0}
+ .result p{font-size:13px}
+ .caseContext p{font-size:13px}
+ .choices fieldset{padding:6px 10px}
+ .choices{gap:6px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 </head>
-<body><main class="wrap"><div class="eyebrow">Decision Systems v0.5 · Automate certainty. Route ambiguity.</div><h1>What happened.<br>What next.<br>Who decides.</h1><p class="lede">A tiny decision layer for product, operations and AI workflows. Reversibility keeps the decision boundary compatible with downstream action policy.</p><div class="flow"><div class="node">What happened?</div><div class="arrow">→</div><div class="node">What next?</div><div class="arrow">→</div><div class="node">Who decides?</div></div><section class="card"><div class="eyebrow">Try the routing rule</div><label for="event">What happened?</label><textarea id="event" placeholder="Example: Two customer records may belong to the same person."></textarea><div class="row"><div class="choice"><strong>Is the next step clear?</strong><label><input type="radio" name="clear" value="yes" checked> Yes</label><label><input type="radio" name="clear" value="no"> No</label></div><div class="choice"><strong>Could a wrong action matter?</strong><label><input type="radio" name="impact" value="no" checked> No / easy to undo</label><label><input type="radio" name="impact" value="yes"> Yes / meaningful consequence</label></div><div class="choice"><strong>Reversible?</strong><label><input type="radio" name="rev" value="yes" checked> Yes</label><label><input type="radio" name="rev" value="no"> No / hard to reverse</label></div></div><div class="result"><div class="eyebrow" style="color:#aaa2b4">Decision</div><div class="big" id="decision">DO IT</div><p id="reason"></p></div></section><p class="small">Core contract: happened / next / decider. Optional reversible bridges to tool policy (AUTO / ASK / BLOCK).</p></main><script src="decision.js"></script><script>
-function value(name){return document.querySelector('input[name="'+name+'"]:checked').value}
+<body>
+<header><div class="wrap"><a class="brand" href="#top">decision systems.</a><a href="https://github.com/dokarpov/decision-systems">Source &amp; tests</a></div></header>
+<main class="wrap" id="top">
+ <div class="eyebrow">INTERACTIVE CONTRACT TEST · RESEARCH PREVIEW</div>
+ <h1>Which decisions can software own?</h1>
+ <p class="intro">Try a familiar work situation, change the risk assumptions and see who should decide the next step. This tool <strong>routes decisions</strong>; it never performs the action.</p>
+ <section class="interface" aria-label="Decision routing test">
+  <div class="interfaceHeader"><span>01 / TRY A CASE</span><span class="tag">ALL DATA SYNTHETIC</span></div>
+  <div class="demoInner">
+   <label class="caseSelect" for="scenario">Choose an example</label>
+   <select id="scenario">
+    <option value="draft">Save a draft internally</option>
+    <option value="identity">Resolve a possible duplicate customer</option>
+    <option value="email">Send a customer-facing email</option>
+    <option value="unknown">An action with unverified reversibility</option>
+   </select>
+   <div class="caseContext"><article><strong>What happened</strong><p id="happened"></p></article><article><strong>Candidate next step</strong><p id="next"></p></article></div>
+   <div class="result" id="result" role="status" aria-live="polite" aria-atomic="true"><div class="meta">CURRENT ROUTE</div><strong id="decision">SYSTEM DECIDES</strong><p id="reason">Only explicit low-consequence, reversible work can be system-owned.</p></div>
+   <div class="choices">
+    <fieldset><legend>Is the next step clear?</legend><label class="radio"><input type="radio" name="clear" value="yes" checked> Yes</label><label class="radio"><input type="radio" name="clear" value="no"> No</label></fieldset>
+    <fieldset><legend>Could a wrong action matter?</legend><label class="radio"><input type="radio" name="impact" value="no" checked> Low impact</label><label class="radio"><input type="radio" name="impact" value="yes"> Consequential</label></fieldset>
+    <fieldset><legend>Can it be reversed?</legend><label class="radio"><input type="radio" name="rev" value="yes" checked> Yes</label><label class="radio"><input type="radio" name="rev" value="no"> No</label><label class="radio"><input type="radio" name="rev" value="unknown"> Not verified</label></fieldset>
+   </div>
+   <details><summary>Inspect the output contract</summary><pre id="output"></pre></details>
+   <div class="actions"><button class="secondary" id="copy" type="button">Copy decision JSON</button><span id="copyStatus" role="status"></span></div>
+   <p class="disclaimer">Demo only. Changing these inputs does not send messages, modify records, store personal information or grant execution permission. In production, an application must verify the evidence and enforce its own action policy.</p>
+  </div>
+ </section>
+ <div class="nextSteps">
+  <div><h2>Are these three checks enough?</h2><p>They probably aren't for every workflow. Run a case from your own work with fictionalized details, then tell us what the rule misses.</p><a href="https://github.com/dokarpov/decision-systems/issues/new?template=validation.yml">Share a test case and feedback</a></div>
+  <div><h2>For developers</h2><p>Try the standalone npm package in a clean consumer project. The repository includes a reproducible install test and a safe handoff example; it is not presented as a registry release.</p><a href="https://github.com/dokarpov/decision-systems/blob/main/docs/EXTERNAL_TESTING.md">Open developer test guide</a></div>
+ </div>
+</main>
+<footer><div class="wrap">Decision Systems · Independent reference project · MIT · No usage analytics in this page</div></footer>
+<script src="./decision.js"></script>
+<script>
+const presets={
+ draft:{happened:'A collaborator has drafted an internal note.',next:'Save the draft for later review.',clear:true,consequential:false,reversible:true},
+ identity:{happened:'Two inbound requests may belong to different people sharing one number.',next:'Merge the customer records.',clear:false,consequential:true,reversible:false},
+ email:{happened:'An agent drafted a reply to an external customer.',next:'Send the reply.',clear:true,consequential:true,reversible:false},
+ unknown:{happened:'An automated workflow proposes a change with an unknown rollback path.',next:'Apply the change.',clear:true,consequential:false,reversible:null}
+};
+const explanations={
+ clear_low_consequence:'Clear, low-impact and explicitly reversible: system-owned decision; action policy still required.',
+ ambiguous:'The required next step is unclear. Give a person the supporting context.',
+ consequential:'The result could matter even though the next step is clear. Route for human review.',
+ ambiguous_and_consequential:'Uncertainty and material impact require human review.',
+ hard_to_reverse:'The outcome is not safely reversible. Require a human decision.',
+ reversibility_unverified:'The rollback path is unverified. Do not assume the action is safe to automate.'
+};
+const value=name=>document.querySelector('input[name="'+name+'"]:checked').value;
+const choose=(name,v)=>{const input=document.querySelector('input[name="'+name+'"][value="'+v+'"]');input.checked=true};
+let current;
 function update(){
-  const result=DecisionSystems.decide({
-    clear:value('clear')==='yes',
-    consequential:value('impact')==='yes',
-    reversible:value('rev')==='yes'
-  });
-  document.getElementById('decision').textContent=result.decider==='system'?'DO IT':'ASK A PERSON';
-  document.getElementById('reason').textContent=result.reason.replaceAll('_',' ')+'.';
+ const preset=presets[document.querySelector('#scenario').value];
+ const rev=value('rev');
+ const input={clear:value('clear')==='yes',consequential:value('impact')==='yes'};
+ if(rev!=='unknown')input.reversible=rev==='yes';
+ const result=DecisionSystems.decide(input);
+ current=DecisionSystems.record({happened:preset.happened,next:preset.next,...input});
+ document.querySelector('#decision').textContent=result.decider==='system'?'SYSTEM DECIDES':'HUMAN REVIEW';
+ document.querySelector('#reason').textContent=explanations[result.reason]||result.reason;
+ document.querySelector('#output').textContent=JSON.stringify(current,null,2);
+ document.querySelector('#copyStatus').textContent='';
 }
-document.querySelectorAll('input').forEach(x=>x.addEventListener('change',update));
-update();
-</script></body></html>
+function setScenario(){
+ const s=presets[document.querySelector('#scenario').value];
+ document.querySelector('#happened').textContent=s.happened;
+ document.querySelector('#next').textContent=s.next;
+ choose('clear',s.clear?'yes':'no');
+ choose('impact',s.consequential?'yes':'no');
+ choose('rev',s.reversible===null?'unknown':s.reversible?'yes':'no');
+ update();
+}
+document.querySelector('#scenario').addEventListener('change',setScenario);
+document.querySelectorAll('input').forEach(el=>el.addEventListener('change',update));
+document.querySelector('#copy').addEventListener('click',async()=>{
+ try{await navigator.clipboard.writeText(JSON.stringify(current,null,2));document.querySelector('#copyStatus').textContent='Copied locally';}
+ catch{document.querySelector('#copyStatus').textContent='Copy unavailable — expand the output contract to select the JSON';}
+});
+setScenario();
+</script>
+</body>
+</html>

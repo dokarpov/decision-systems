@@ -1,0 +1,68 @@
+name: Product validation — Decision Systems
+description: Report a fictionalized scenario, integration problem or counterexample. No private data.
+title: "[Validation] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying Decision Systems. Please use **synthetic or anonymized** situations only. Do not paste credentials, real customer records or private communications.
+  - type: dropdown
+    id: perspective
+    attributes:
+      label: Testing perspective
+      options:
+        - Developer / workflow builder
+        - Operator / product owner
+        - Security / governance
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario and proposed next action
+      description: Fictionalize any details. Avoid names, accounts or private data.
+      placeholder: "A user asked a question already answered in the internal knowledge base; propose a saved draft response."
+    validations:
+      required: true
+  - type: dropdown
+    id: actual
+    attributes:
+      label: Observed route
+      options:
+        - System
+        - Human
+        - Cannot determine / technical failure
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect and why?
+      placeholder: "I expected human review because..."
+    validations:
+      required: true
+  - type: textarea
+    id: friction
+    attributes:
+      label: What was confusing, missing or difficult?
+      placeholder: "I could not assign reversibility because..."
+  - type: dropdown
+    id: reuse
+    attributes:
+      label: Would you reuse this in an independent workflow?
+      options:
+        - Yes, as is
+        - Maybe, with changes
+        - No
+        - Too early to say
+    validations:
+      required: true
+  - type: checkboxes
+    id: redaction
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: This issue contains no personal data or secrets.
+          required: true

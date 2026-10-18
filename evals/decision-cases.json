@@ -1,14 +1,126 @@
 [
-  {"id":"known-faq","clear":true,"consequential":false,"expected":"system","kind":"illustrative"},
-  {"id":"draft-only","clear":true,"consequential":false,"expected":"system","kind":"illustrative"},
-  {"id":"refund-exception","clear":false,"consequential":true,"expected":"person","kind":"illustrative"},
-  {"id":"external-send","clear":true,"consequential":true,"expected":"person","kind":"illustrative"},
-  {"id":"duplicate-identity","clear":false,"consequential":true,"expected":"person","kind":"illustrative"},
-  {"id":"missing-evidence","clear":false,"consequential":false,"expected":"person","kind":"synthetic"},
-  {"id":"destructive-change","clear":true,"consequential":true,"expected":"person","kind":"synthetic"},
-  {"id":"unknown-next-step","clear":false,"consequential":false,"expected":"person","kind":"synthetic"},
-  {"id":"clear-irreversible-delete","clear":true,"consequential":false,"reversible":false,"expected":"person","kind":"agentic"},
-  {"id":"crm-write-reversible","clear":true,"consequential":false,"reversible":true,"expected":"system","kind":"agentic"},
-  {"id":"money-move","clear":true,"consequential":true,"reversible":false,"expected":"person","kind":"agentic"},
-  {"id":"privilege-grant","clear":true,"consequential":true,"reversible":false,"expected":"person","kind":"agentic"}
+  {
+    "id": "known-faq",
+    "clear": true,
+    "consequential": false,
+    "expected": "system",
+    "kind": "illustrative",
+    "reversible": true
+  },
+  {
+    "id": "draft-only",
+    "clear": true,
+    "consequential": false,
+    "expected": "system",
+    "kind": "illustrative",
+    "reversible": true
+  },
+  {
+    "id": "refund-exception",
+    "clear": false,
+    "consequential": true,
+    "expected": "person",
+    "kind": "illustrative"
+  },
+  {
+    "id": "external-send",
+    "clear": true,
+    "consequential": true,
+    "expected": "person",
+    "kind": "illustrative"
+  },
+  {
+    "id": "duplicate-identity",
+    "clear": false,
+    "consequential": true,
+    "expected": "person",
+    "kind": "illustrative"
+  },
+  {
+    "id": "missing-evidence",
+    "clear": false,
+    "consequential": false,
+    "expected": "person",
+    "kind": "synthetic"
+  },
+  {
+    "id": "destructive-change",
+    "clear": true,
+    "consequential": true,
+    "expected": "person",
+    "kind": "synthetic"
+  },
+  {
+    "id": "unknown-next-step",
+    "clear": false,
+    "consequential": false,
+    "expected": "person",
+    "kind": "synthetic"
+  },
+  {
+    "id": "clear-irreversible-delete",
+    "clear": true,
+    "consequential": false,
+    "reversible": false,
+    "expected": "person",
+    "kind": "agentic"
+  },
+  {
+    "id": "crm-write-reversible",
+    "clear": true,
+    "consequential": false,
+    "reversible": true,
+    "expected": "system",
+    "kind": "agentic"
+  },
+  {
+    "id": "money-move",
+    "clear": true,
+    "consequential": true,
+    "reversible": false,
+    "expected": "person",
+    "kind": "agentic"
+  },
+  {
+    "id": "privilege-grant",
+    "clear": true,
+    "consequential": true,
+    "reversible": false,
+    "expected": "person",
+    "kind": "agentic"
+  },
+  {
+    "id": "reversibility-not-assessed",
+    "clear": true,
+    "consequential": false,
+    "expected": "person",
+    "reason": "reversibility_unverified",
+    "kind": "safety-negative"
+  },
+  {
+    "id": "clear-low-consequence-explicit-true",
+    "clear": true,
+    "consequential": false,
+    "reversible": true,
+    "expected": "system",
+    "reason": "clear_low_consequence",
+    "kind": "safety-positive"
+  },
+  {
+    "id": "low-consequence-explicit-false",
+    "clear": true,
+    "consequential": false,
+    "reversible": false,
+    "expected": "person",
+    "reason": "hard_to_reverse",
+    "kind": "safety-negative"
+  },
+  {
+    "id": "ambiguous-unknown-reversibility",
+    "clear": false,
+    "consequential": false,
+    "expected": "person",
+    "reason": "reversibility_unverified",
+    "kind": "safety-negative"
+  }
 ]

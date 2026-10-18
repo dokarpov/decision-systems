@@ -10,6 +10,8 @@
     if (reversible !== undefined && typeof reversible !== 'boolean') throw new TypeError('reversible must be a boolean when provided');
     const traits = { clear, consequential, reversible: reversible === undefined ? null : reversible };
     if (reversible === false) return { decider: 'person', reason: 'hard_to_reverse', traits };
+    // Unknown reversibility is not proof of reversibility. Never infer permission to automate.
+    if (reversible === undefined) return { decider: 'person', reason: 'reversibility_unverified', traits };
     if (clear && !consequential) return { decider: 'system', reason: 'clear_low_consequence', traits };
     if (!clear && consequential) return { decider: 'person', reason: 'ambiguous_and_consequential', traits };
     if (!clear) return { decider: 'person', reason: 'ambiguous', traits };
