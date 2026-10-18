@@ -2,34 +2,61 @@ import { chromium } from 'playwright';
 
 const base=process.env.BASE_URL||'http://127.0.0.1:4173';
 const viewports=[
-  {name:'mobile-320',width:320,height:700},
-  {name:'mobile-390',width:390,height:844},
+  {name:'small-mobile',width:320,height:700},
+  {name:'mobile',width:390,height:844},
   {name:'tablet',width:768,height:1024},
-  {name:'desktop',width:1440,height:1000}
+  {name:'desktop',width:1440,height:900}
 ];
 
 const browser=await chromium.launch({headless:true});
-for(const vp of viewports){
+try{
+ for(const vp of viewports){
   const context=await browser.newContext({viewport:{width:vp.width,height:vp.height}});
   const page=await context.newPage();
-  const errors=[]; page.on('pageerror',e=>errors.push(String(e)));
-  await page.goto(base+'/',{waitUntil:'networkidle'});
-  const layout=await page.evaluate(()=>({
-    scrollWidth:document.documentElement.scrollWidth,
-    viewport:innerWidth,
-    h1:document.querySelector('h1')?.textContent.trim(),
-    decision:document.querySelector('#decision')?.textContent.trim()
-  }));
-  if(!layout.h1) throw new Error(vp.name+': h1 missing');
-  if(layout.scrollWidth>layout.viewport+2) throw new Error(vp.name+': horizontal overflow');
-  if(layout.decision!=='DO IT') throw new Error(vp.name+': default decision incorrect');
-  await page.locator('input[name="clear"][value="no"]').check();
-  if((await page.locator('#decision').textContent()).trim()!=='ASK A PERSON') throw new Error(vp.name+': ambiguity not routed to person');
-  await page.locator('input[name="clear"][value="yes"]').check();
-  await page.locator('input[name="rev"][value="no"]').check();
-  if((await page.locator('#decision').textContent()).trim()!=='ASK A PERSON') throw new Error(vp.name+': irreversible action not routed to person');
-  if(errors.length) throw new Error(vp.name+': '+errors.join(' | '));
-  console.log('PASS',vp.name);
-  await context.close();
-}
-await browser.close();
+  try{
+   const errors=[],failed=[];
+   page.on('pageerror',e=>errors.push(String(e)));
+   page.on('requestfailed',r=>failed.push(r.url()));
+   const response=await page.goto(base+'/',{waitUntil:'networkidle'});
+   if(response?.status()!==200)throw new Error(vp.name+': HTTP '+response?.status());
+   const info=await page.evaluate(()=>({
+     title:document.querySelector('h1')?.textContent.trim(),
+     scroll:document.documentElement.scrollWidth,
+     viewport:innerWidth
+   }));
+   if(!info.title?.includes('Which decisions'))throw new Error(vp.name+': heading missing');
+   if(info.scroll>info.viewport+2)throw new Error(vp.name+': horizontal overflow');
+   const route=page.locator('#decision');
+   if((await route.textContent()).trim()!=='SYSTEM DECIDES')throw new Error(vp.name+': safe default');
+   await page.locator('#scenario').selectOption('identity');
+   if((await route.textContent()).trim()!=='HUMAN REVIEW')throw new Error(vp.name+': duplicate identity should defer');
+   await page.locator('#scenario').selectOption('unknown');
+   if((await route.textContent()).trim()!=='HUMAN REVIEW')throw new Error(vp.name+': unknown reversibility should defer');
+   if(!(await page.locator('#reason').textContent()).includes('unverified'))throw new Error(vp.name+': unknown reason not visible');
+   await page.locator('input[name="rev"][value="yes"]').check();
+   if((await route.textContent()).trim()!=='SYSTEM DECIDES')throw new Error(vp.name+': known reversible low consequence');
+   await page.locator('input[name="impact"][value="yes"]').check();
+   if((await route.textContent()).trim()!=='HUMAN REVIEW')throw new Error(vp.name+': consequence should defer');
+   // Key product requirement: show consequence of changing an input without manually scrolling to results.
+   if(vp.width<=390){
+     const metrics=await page.evaluate(()=>{
+       const r=document.getElementById('result').getBoundingClientRect();
+       return {y:r.y,visible:r.bottom>0&&r.top<innerHeight,top:r.top,bottom:r.bottom,screen:innerHeight};
+     });
+     if(!metrics.visible)throw new Error(vp.name+': changed result is below viewport: '+JSON.stringify(metrics));
+   }
+   await page.locator('details summary').click();
+   const output=JSON.parse(await page.locator('#output').textContent());
+   if(output.decider!=='person'||output.reason!=='consequential')throw new Error(vp.name+': JSON output disagrees with UI');
+   const contrast=await page.evaluate(()=>{
+    const rgb=str=>(str.match(/\d+(?:\.\d+)?/g)||[]).slice(0,3).map(Number);
+    const lum=a=>a.map(v=>{v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((n,v,i)=>n+v*[.2126,.7152,.0722][i],0);
+    const el=document.querySelector('#reason');const f=lum(rgb(getComputedStyle(el).color)),b=lum(rgb(getComputedStyle(document.querySelector('.result')).backgroundColor));
+    return (Math.max(f,b)+.05)/(Math.min(f,b)+.05);
+   });
+   if(contrast<4.5)throw new Error(vp.name+': result contrast below 4.5:1 '+contrast);
+   if(errors.length||failed.length)throw new Error(vp.name+': '+JSON.stringify({errors,failed}));
+   console.log('PASS',vp.name);
+  }finally{await context.close()}
+ }
+}finally{await browser.close()}
