@@ -1,13 +1,32 @@
 {
   "name": "decision-systems",
-  "version": "0.5.0",
-  "description": "Small explicit decision boundary for product and agentic workflows: happened → next → who decides.",
+  "version": "0.6.0",
+  "description": "Small deterministic decision-routing contract, with conservative human handoff and an independent consumer test.",
   "author": "Daria Karpova <dokarpov>",
   "license": "MIT",
-  "keywords": ["decision-systems", "agentic", "human-in-the-loop", "policy", "product", "ai-agents"],
+  "keywords": [
+    "decision-systems",
+    "agentic",
+    "human-in-the-loop",
+    "policy",
+    "product",
+    "ai-agents"
+  ],
   "main": "decision.js",
   "scripts": {
-    "test": "node --test tests/core.test.js && node scripts/run-evals.mjs"
+    "test": "node --test tests/core.test.js tests/consumer.test.js && node scripts/run-evals.mjs",
+    "test:consumer": "node --test tests/consumer.test.js"
   },
-  "files": ["decision.js", "decision.schema.json", "docs/", "evals/", "examples/", "index.html", "LICENSE", "README.md", "CHANGELOG.md"]
+  "files": [
+    "decision.js",
+    "decision.schema.json",
+    "docs/",
+    "evals/",
+    "examples/",
+    "index.html",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md"
+  ]
 }
